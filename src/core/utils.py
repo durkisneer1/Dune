@@ -64,11 +64,15 @@ def import_image(
     return image_surf
 
 
-def load_tmx_layers(game: "Game", data: "TiledMap", layer_name: str, targets: tuple[list, ...] | list) -> None:
+def load_tmx_layers(
+    game: "Game", data: "TiledMap", layer_name: str, targets: tuple[list, ...] | list
+) -> None:
     if isinstance(targets, tuple) and not targets:
         return
 
-    layer_names = [layer.name for layer in data.visible_layers if hasattr(layer, "data")]
+    layer_names = [
+        layer.name for layer in data.visible_layers if hasattr(layer, "data")
+    ]
     if layer_name not in layer_names:
         print(f"ERROR: Layer '{layer_name}' not found in '{data.filename}'")
         return
