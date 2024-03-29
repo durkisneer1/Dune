@@ -15,7 +15,7 @@ class Player:
         self.pos = pg.Vector2(WIN_WIDTH / 2, WIN_HEIGHT / 2)
         self.rect = self.image.get_frect(center=self.pos)
         self.direction = pg.Vector2()
-        self.speed = 100
+        self.speed = 150
         self.right = False
 
     def move(self):
