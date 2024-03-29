@@ -36,11 +36,16 @@ class AccuracyStatus:
         self.zoom.add_frame(0.5, 1.0, 150, easing_type=ease_in_out_back)
         self.zoom.add_frame(1.0, 1.2, 150, easing_type=ease_in_back)
         self.zoom.add_frame(1.2, 1.0, 150, easing_type=ease_in_back)
-        self.zoom.add_frame(1.0, 0.0, 150, easing_type=ease_in_out_expo)
+        self.zoom.add_frame(1.0, 0.0, 350, easing_type=ease_in_out_expo)
 
         self.acurracy = ["Very Silly", "Kinda Silly", "Silly", "Not Silly", "Miss"]
         self.texts = [
-            self.font.render(acurracy, True, "white") for acurracy in self.acurracy
+            (
+                self.font.render(acurracy, True, "green")
+                if acurracy != "Miss"
+                else self.font.render(acurracy, True, "red")
+            )
+            for acurracy in self.acurracy
         ]
         self.current_status = None
         self.acc_surface = None
@@ -99,10 +104,10 @@ class ArrowHUD:
         self.begin = time.time()
         self.current_time = 0
         self.lanes = [
-            [i * 250 * 2 for i in range(1, 120)],
-            [i * 150 * 2 for i in range(1, 120)],
-            [150 + i * 150 * 2 for i in range(1, 120)],
-            [150 + i * 350 * 2 for i in range(1, 120)],
+            [i * 250 * 5 for i in range(1, 120)],
+            [i * 150 * 5 for i in range(1, 120)],
+            [150 + i * 150 * 5 for i in range(1, 120)],
+            [150 + i * 350 * 5 for i in range(1, 120)],
         ]
         self.fall_speed = 0.3
 
@@ -116,7 +121,7 @@ class ArrowHUD:
 
         for idx, keymap in enumerate(self.keymaps):
             if not self.lanes[idx]:
-                break
+                continue
             if just_pressed[keymap]:
                 nonabsdiff = self.current_time - self.lanes[idx][0] - self.offset
                 diff = abs(nonabsdiff)
@@ -143,7 +148,6 @@ class ArrowHUD:
                     self.acc_status.fire_anim()
 
                     self.lanes[idx].pop(0)
-                print(self.acc_status.current_status, diff)
         self.acc_status.update()
 
     def render(self, surface: pygame.Surface):
@@ -159,7 +163,9 @@ class ArrowHUD:
                     continue
                 ypos = 10 + (timestamp - self.current_time) * self.fall_speed
                 if ypos < -20:
-                    # self.acc_status.current_status = 4
+                    self.acc_status.current_status = 4
+                    self.acc_status.fire_anim()
+
                     self.lanes[lane_idx].pop(ts_idx)
                 else:
                     surface.blit(
