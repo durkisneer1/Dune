@@ -1,10 +1,15 @@
-from os import walk
-from settings import *
-import pygame as pg
-from pytmx import TiledMap
-from tile import Tile
-import inspect
 import os
+import inspect
+from typing import TYPE_CHECKING
+
+import pygame as pg
+
+from settings import *
+from tile import Tile
+
+if TYPE_CHECKING:
+    from main import Game
+    from pytmx import TiledMap
 
 
 image_load = pg.image.load
@@ -20,7 +25,7 @@ def import_folder(
     blur: bool = False,
 ) -> list[pg.Surface]:
     surf_list = []
-    for _, __, img_file in walk(path):
+    for _, __, img_file in os.walk(path):
         for image in img_file:
             full_path = path + "/" + image
             surface = import_image(full_path, is_alpha, scale, highlight, blur)
@@ -50,7 +55,7 @@ def import_image(
             (image_surf.get_width() + 20, image_surf.get_height() + 20), pg.SRCALPHA
         )
         template_surf.fill((0, 0, 0, 0))
-        image_rect = image_surf.get_rect(
+        image_rect = image_surf.get_frect(
             center=(template_surf.get_width() / 2, template_surf.get_height() / 2)
         )
         template_surf.blit(image_surf, image_rect)
@@ -60,7 +65,7 @@ def import_image(
 
 
 def load_tmx_layers(
-    data: TiledMap, layer_name: str, targets: tuple[list, ...] | list
+    game: "Game", data: "TiledMap", layer_name: str, targets: tuple[list, ...] | list
 ) -> None:
     if isinstance(targets, tuple) and not targets:
         return
@@ -77,7 +82,7 @@ def load_tmx_layers(
             if layer.name == layer_name:
                 for x, y, surface in layer.tiles():
                     pos = pg.Vector2(x * TILE_WIDTH, y * TILE_HEIGHT)
-                    tile = Tile(pos, surface, layer.name)
+                    tile = Tile(game, pos, surface, layer.name)
                     if isinstance(targets, list):
                         targets.append(tile)
                     else:

@@ -8,6 +8,7 @@ class Game:
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pg.SCALED)
+        pg.display.set_caption("Dune")
         self.clock = pg.Clock()
 
         self.keys = ()
@@ -18,9 +19,9 @@ class Game:
         tile_set = load_pygame("assets/terrain.tmx")
         self.collision_tiles = []
         self.all_tiles = []
-        load_tmx_layers(tile_set, "Sand", self.all_tiles)
-        load_tmx_layers(tile_set, "Wall", (self.collision_tiles, self.all_tiles))
-        load_tmx_layers(tile_set, "Tree", self.all_tiles)
+        load_tmx_layers(self, tile_set, "Sand", self.all_tiles)
+        load_tmx_layers(self, tile_set, "Wall", (self.collision_tiles, self.all_tiles))
+        load_tmx_layers(self, tile_set, "Tree", self.all_tiles)
 
         self.player = Player(self, [tile.rect for tile in self.collision_tiles])
 
@@ -36,7 +37,6 @@ class Game:
     def run(self):
         while self.running:
             self.dt = self.clock.tick() / 1000
-            pg.display.set_caption(f"{self.clock.get_fps():.1f}")
             self.keys = pg.key.get_pressed()
 
             for event in pg.event.get():
@@ -46,7 +46,7 @@ class Game:
 
             self.screen.fill((30, 30, 30))
             for tile in self.all_tiles:
-                tile.draw(self.screen, self.camera)
+                tile.draw()
             self.player.draw()
 
             pg.display.flip()
