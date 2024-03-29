@@ -2,6 +2,7 @@ from pytmx.util_pygame import load_pygame
 
 from utils import *
 from player import Player
+from ride_level import RideLevel
 
 
 class Game:
@@ -27,6 +28,8 @@ class Game:
 
         self.camera = pg.Vector2()
 
+        self.ride_level = RideLevel(self)
+
     def close(self, event: pg.Event):
         if event.type == pg.QUIT:
             self.running = False
@@ -42,12 +45,14 @@ class Game:
             for event in pg.event.get():
                 self.close(event)
 
-            self.player.move()
+            # self.player.move()
+            #
+            # self.screen.fill("white")
+            # for tile in self.all_tiles:
+            #     tile.draw()
+            # self.player.draw()
 
-            self.screen.fill((30, 30, 30))
-            for tile in self.all_tiles:
-                tile.draw()
-            self.player.draw()
+            self.ride_level.update()
 
             pg.display.flip()
 
