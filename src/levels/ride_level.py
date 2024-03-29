@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from worm import Worm
+from src.worm import Worm
 
 if TYPE_CHECKING:
     from main import Game
