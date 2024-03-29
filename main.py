@@ -38,21 +38,6 @@ class Game:
             if event.key == pg.K_ESCAPE:
                 self.running = False
 
-    def update(self):
-        self.keys = pg.key.get_pressed()
-        self.player.move()
-        self.arrowhud.update()
-
-    def render(self):
-        self.screen.fill((30, 30, 30))
-        for tile in self.all_tiles:
-            tile.draw()
-        self.player.draw()
-
-        self.arrowhud.render(self.screen)
-
-        pg.display.flip()
-
     def run(self):
         while self.running:
             self.dt = pg.math.clamp(self.clock.tick() / 1000, 0.001, 0.05)
