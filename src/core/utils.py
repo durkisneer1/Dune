@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 import pygame as pg
 
-from settings import *
-from tile import Tile
+from src.core.settings import *
+from src.tile import Tile
 
 if TYPE_CHECKING:
     from main import Game
