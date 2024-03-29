@@ -35,7 +35,8 @@ class Game:
 
     def run(self):
         while self.running:
-            self.dt = self.clock.tick(60) / 1000
+            self.dt = self.clock.tick() / 1000
+            pg.display.set_caption(f"{self.clock.get_fps():.1f}")
             self.keys = pg.key.get_pressed()
 
             for event in pg.event.get():

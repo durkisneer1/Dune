@@ -44,7 +44,9 @@ class Player:
         self.rect.centery = self.pos.y
         self.v_collide()
 
-        self.game.camera = self.game.camera.lerp(self.pos - pg.Vector2(WIN_WIDTH / 2, WIN_HEIGHT / 2), self.game.dt * 3)
+        self.game.camera = self.game.camera.lerp(
+            self.pos - pg.Vector2(WIN_WIDTH / 2, WIN_HEIGHT / 2), self.game.dt * 3
+        )
 
     def h_collide(self):
         for collider in self.colliders:
