@@ -46,6 +46,8 @@ class ArrowHUD:
             pygame.transform.rotate(self.arrow_tinted, 90),
         ]
 
+        self.bpm = 120
+        self.offset = 2000
         self.begin = time.time()
         self.current_time = 0
         self.lanes = [
@@ -54,7 +56,7 @@ class ArrowHUD:
             [150 + i * 150 * 2 for i in range(1, 1250000)],
             [150 + i * 150 * 2 for i in range(1, 1250000)],
         ]
-        self.fall_speed = 0.1
+        self.fall_speed = 0.3
 
         self.keymaps = [pygame.K_x, pygame.K_c, pygame.K_COMMA, pygame.K_PERIOD]
 
@@ -65,17 +67,19 @@ class ArrowHUD:
         self.current_time = (time.time() - self.begin) * 1000
         for idx, keymap in enumerate(self.keymaps):
             if just_pressed[keymap]:
-                diff = abs(self.current_time - self.lanes[idx][0])
-                print(diff)
+                diff = abs(self.current_time - self.lanes[idx][0] - self.offset)
                 if diff < 100:
                     self.lanes[idx].pop(0)
                     print("hit")
 
     def render(self, surface: pygame.Surface):
         for idx, arrow in enumerate(self.arrows):
+
             surface.blit(arrow, [10 + idx * 20, 10])
+
         for lane_idx, lane in enumerate(self.lanes):
             for ts_idx, timestamp in enumerate(lane):
+                timestamp = timestamp + self.offset
                 if timestamp > self.current_time + 1000:
                     break
                 if (timestamp - self.current_time) * self.fall_speed > 2000:
