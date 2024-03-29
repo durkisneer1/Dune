@@ -13,6 +13,8 @@ class RideLevel:
         self.worm = Worm(game)
 
     def update(self):
-        self.game.screen.fill((30, 30, 30))
+        self.game.screen.fill("white")
+        for tile in self.game.all_tiles:
+            tile.draw()
         self.worm.update()
         self.worm.draw()

@@ -1,3 +1,5 @@
+from pytmx.util_pygame import load_pygame
+
 from src.core.utils import *
 from src.levels.ride_level import RideLevel
 from src.levels.lobby import LobbyLevel
@@ -14,6 +16,13 @@ class Game:
         self.dt = 0
         self.running = True
 
+        tile_set = load_pygame("assets/terrain.tmx")
+        self.collision_tiles = []
+        self.all_tiles = []
+        load_tmx_layers(self, tile_set, "Sand", self.all_tiles)
+        load_tmx_layers(self, tile_set, "Wall", (self.collision_tiles, self.all_tiles))
+        load_tmx_layers(self, tile_set, "Tree", self.all_tiles)
+
         self.level_dict = {
             "ride": RideLevel(self),
             "lobby": LobbyLevel(self),
@@ -29,7 +38,7 @@ class Game:
 
     def run(self):
         while self.running:
-            self.dt = self.clock.tick() / 1000
+            self.dt = pg.math.clamp(self.clock.tick() / 1000, 0.001, 0.05)
             self.keys = pg.key.get_pressed()
 
             for event in pg.event.get():

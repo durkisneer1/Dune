@@ -2,6 +2,8 @@ from typing import TYPE_CHECKING
 
 import pygame as pg
 
+from src.core.settings import *
+
 if TYPE_CHECKING:
     from main import Game
 
@@ -11,6 +13,7 @@ class Worm:
         self.game = game
 
         self.head = BodySegment()
+        self.head.pos = pg.Vector2(WIN_WIDTH / 2, WIN_HEIGHT / 2)
         self.segments = []
         for i in range(10):
             segment = BodySegment(
@@ -20,14 +23,28 @@ class Worm:
             self.segments.append(segment)
         self.segments.reverse()
 
+        self.direction = pg.Vector2(1, 0)
+        self.speed = 100
+
     def update(self):
-        self.head.pos.xy = pg.mouse.get_pos()
+        if self.game.keys[pg.K_LEFT]:
+            self.direction.rotate_ip(-self.game.dt * 115)
+        if self.game.keys[pg.K_RIGHT]:
+            self.direction.rotate_ip(self.game.dt * 115)
+        self.direction.normalize_ip()
+
+        self.head.pos += self.direction * self.speed * self.game.dt
         for segment in self.segments:
             segment.update(self.game.dt)
 
+        self.game.camera = self.game.camera.lerp(
+            self.head.pos - pg.Vector2(WIN_WIDTH / 2, WIN_HEIGHT / 2),
+            self.game.dt * 10
+        )
+
     def draw(self):
         for segment in self.segments:
-            pg.draw.circle(self.game.screen, segment.color, segment.pos, 8)
+            pg.draw.circle(self.game.screen, segment.color, segment.pos - self.game.camera, 8)
 
 
 class BodySegment:
