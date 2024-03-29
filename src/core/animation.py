@@ -13,7 +13,7 @@ class LoopType(Enum):
 _AnimNodePoint: typing.TypeAlias = typing.Union[int, float, list[int | float]]
 
 
-def _node_sum(n: _AnimNodePoint, n2: _AnimNodePoint):
+def _node_sum(n: _AnimNodePoint, n2: _AnimNodePoint) -> list | float | int:
     if isinstance(n, list) and isinstance(n2, list):
         mult_list = []
         for idx, entry in enumerate(n):
@@ -23,7 +23,7 @@ def _node_sum(n: _AnimNodePoint, n2: _AnimNodePoint):
         return n + n2
 
 
-def _node_mult(n: _AnimNodePoint, factor: int | float):
+def _node_mult(n: _AnimNodePoint, factor: int | float) -> list | float | int:
     if isinstance(n, list):
         mult_list = []
         for entry in n:
@@ -40,7 +40,7 @@ class _AnimNode:
     duration_ms: int
     easing_type: typing.Callable
 
-    def diff(self):
+    def diff(self) -> list | float | int:
         if isinstance(self.start, list) and isinstance(self.end, list):
             diff_list = []
             for idx, entry in enumerate(self.end):
@@ -50,7 +50,7 @@ class _AnimNode:
             return self.end - self.start
 
 
-def _check_for_data_type_coherence(d1, d2):
+def _check_for_data_type_coherence(d1: int | float | list, d2: int | float | list) -> bool:
     d1_type = type(d1)
     d2_type = type(d2)
 
@@ -65,7 +65,7 @@ def _check_for_data_type_coherence(d1, d2):
 
 
 class MotionGroup:
-    def __init__(self) -> None:
+    def __init__(self):
         self._motions: list[Motion] = []
 
     def add(self, *motions: Motion):
@@ -78,7 +78,8 @@ class MotionGroup:
 
 
 class Motion:
-    def __init__(self) -> None:
+    def __init__(self):
+        self.loops = 0
         self.frame = 0
         self.frames: list[_AnimNode] = []
         self.current_value: typing.Optional[_AnimNodePoint] = 0
@@ -87,7 +88,7 @@ class Motion:
         self._is_playing = False
         self._going_backwards = False
 
-    def get_value(self):
+    def get_value(self) -> typing.Optional[_AnimNodePoint]:
         return self.current_value
 
     def add_frame(self, start, end, duration_ms, easing_type):
@@ -109,21 +110,22 @@ class Motion:
         self.current_value = self.frames[self.frame].start
         self.time_stamp = time.time()
 
-    def is_playing(self):
+    def is_playing(self) -> bool:
         return self._is_playing
 
-    def get_current_frame(self):
+    def get_current_frame(self) -> int:
         return self.frame
 
-    def get_current_animation_node(self):
+    def get_current_animation_node(self) -> _AnimNode:
         return self.frames[self.frame]
 
-    def is_going_backwards(self):
+    def is_going_backwards(self) -> bool:
         return self._going_backwards
 
-    def update(self):
+    def update(self) -> None:
         if not self.is_playing():
             return
+
         frame = self.frames[self.frame]
         time_diff = (time.time() - self.time_stamp) * 1000
         t = time_diff / frame.duration_ms

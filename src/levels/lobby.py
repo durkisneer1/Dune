@@ -1,5 +1,6 @@
+from typing import TYPE_CHECKING
+
 from src.player import Player
-from src.core.utils import *
 
 if TYPE_CHECKING:
     from main import Game

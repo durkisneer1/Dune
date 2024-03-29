@@ -1,6 +1,8 @@
 from pytmx.util_pygame import load_pygame
+import pygame as pg
 
-from src.core.utils import *
+from src.core.settings import *
+from src.core.surfaces import load_tmx_layers
 from src.levels.arrow_level import ArrowLevel
 from src.levels.ride_level import RideLevel
 from src.levels.lobby import LobbyLevel

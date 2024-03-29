@@ -1,4 +1,9 @@
-from src.core.utils import *
+from typing import TYPE_CHECKING
+
+import pygame as pg
+
+from src.core.surfaces import import_image
+from src.core.settings import *
 
 if TYPE_CHECKING:
     from main import Game

@@ -1,18 +1,19 @@
 from typing import TYPE_CHECKING
 
+from src.vsrg.hud import ArrowHUD
+
 if TYPE_CHECKING:
     from main import Game
-from src.vsrg.hud import ArrowHUD
 
 
 class ArrowLevel:
-    def __init__(self, game: "Game") -> None:
+    def __init__(self, game: "Game"):
         self.game = game
-        self.hud = ArrowHUD()
+        self.hud = ArrowHUD(game)
 
     def update(self):
-        self.hud.update()
         self.game.screen.fill("white")
         for tile in self.game.all_tiles:
             tile.draw()
-        self.hud.render(self.game.screen)
+        self.hud.update()
+        self.hud.draw()

@@ -35,7 +35,7 @@ class Worm:
 
         self.head.pos += self.direction * self.speed * self.game.dt
         for segment in self.segments:
-            segment.update(self.game.dt)
+            segment.update()
 
         self.game.camera = self.game.camera.lerp(
             self.head.pos - pg.Vector2(WIN_WIDTH / 2, WIN_HEIGHT / 2),
@@ -54,7 +54,7 @@ class BodySegment:
         self.space = 14
         self.color = color
 
-    def update(self, dt: float) -> None:
+    def update(self) -> None:
         if self.pos.distance_to(self.parent.pos) < self.space:
             return
 

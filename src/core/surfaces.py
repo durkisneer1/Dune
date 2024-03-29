@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
 image_load = pg.image.load
 pg_surface = pg.Surface
-pg_mixer_sound = pg.mixer.Sound
 
 
 def import_folder(
@@ -102,11 +101,5 @@ def new_surface(*args, **kwargs):
     return pg_surface(*args, **kwargs)
 
 
-def new_mixer_sound(*args, **kwargs):
-    print("Sound loaded:", args[0])
-    return pg_mixer_sound(*args, **kwargs)
-
-
 pg.image.load = new_image_load
 pg.Surface = new_surface
-pg.mixer.Sound = new_mixer_sound
