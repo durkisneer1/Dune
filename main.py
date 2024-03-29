@@ -1,6 +1,7 @@
 from pytmx.util_pygame import load_pygame
 
 from src.core.utils import *
+from src.levels.arrow_level import ArrowLevel
 from src.levels.ride_level import RideLevel
 from src.levels.lobby import LobbyLevel
 
@@ -26,8 +27,9 @@ class Game:
         self.level_dict = {
             "ride": RideLevel(self),
             "lobby": LobbyLevel(self),
+            "arrow": ArrowLevel(self),
         }
-        self.current_level = "ride"
+        self.current_level = "arrow"
 
     def close(self, event: pg.Event):
         if event.type == pg.QUIT:
@@ -37,7 +39,6 @@ class Game:
                 self.running = False
 
     def update(self):
-        # pg.display.set_caption(f"{self.clock.get_fps():.1f} fps")
         self.keys = pg.key.get_pressed()
         self.player.move()
         self.arrowhud.update()
