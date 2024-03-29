@@ -49,10 +49,10 @@ class ArrowHUD:
         self.begin = time.time()
         self.current_time = 0
         self.lanes = [
-            [i * 80 * 2 for i in range(1, 1250000)],
-            [i * 80 * 2 for i in range(1, 1250000)],
-            [80 + i * 80 * 2 for i in range(1, 1250000)],
-            [80 + i * 80 * 2 for i in range(1, 1250000)],
+            [i * 150 * 2 for i in range(1, 1250000)],
+            [i * 150 * 2 for i in range(1, 1250000)],
+            [150 + i * 150 * 2 for i in range(1, 1250000)],
+            [150 + i * 150 * 2 for i in range(1, 1250000)],
         ]
         self.fall_speed = 0.1
 
