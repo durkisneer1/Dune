@@ -154,6 +154,7 @@ class ArrowHUD:
         self.game.screen.blit(self.bg_surface, [10, 0])
         for idx, (arrow, arrow_tinted) in enumerate(
             zip(self.static_arrows, self.falling_arrows)
+
         ):
             self.game.screen.blit(arrow, [10 + idx * 20, 10])
 
@@ -173,6 +174,8 @@ class ArrowHUD:
                     self.lanes[lane_idx].pop(ts_idx)
                 else:
                     self.game.screen.blit(
+
                         self.falling_arrows[lane_idx], [10 + lane_idx * 20, y_pos]
+
                     )
         self.acc_status.draw()
