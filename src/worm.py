@@ -1,11 +1,11 @@
-from typing import TYPE_CHECKING
 from random import randint
+from typing import TYPE_CHECKING
 
 import pygame as pg
 
+from src.core.particles import Particle
 from src.core.settings import *
 from src.core.surfaces import import_image
-from src.core.particles import Particle
 
 if TYPE_CHECKING:
     from main import Game
@@ -109,4 +109,10 @@ class BodySegment:
             self.tick = 0
             angle_offset = randint(-20, 20)
             direction.rotate_ip(angle_offset)
-            Particle(self.pos - camera, direction * 10, (191, 121, 88), randint(1, 3) / 2, randint(1, 3))
+            Particle(
+                self.pos - camera,
+                direction * 10,
+                (191, 121, 88),
+                randint(1, 3) / 2,
+                randint(1, 3),
+            )

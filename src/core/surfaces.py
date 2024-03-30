@@ -1,5 +1,5 @@
-import os
 import inspect
+import os
 from typing import TYPE_CHECKING
 
 import pygame as pg
@@ -8,8 +8,9 @@ from src.core.settings import *
 from src.tile import Tile
 
 if TYPE_CHECKING:
-    from main import Game
     from pytmx import TiledMap
+
+    from main import Game
 
 
 image_load = pg.image.load

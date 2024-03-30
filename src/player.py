@@ -2,8 +2,8 @@ from typing import TYPE_CHECKING
 
 import pygame as pg
 
-from src.core.surfaces import import_image
 from src.core.settings import *
+from src.core.surfaces import import_image
 
 if TYPE_CHECKING:
     from main import Game
