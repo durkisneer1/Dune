@@ -5,7 +5,12 @@ class Particle:
     particles = []
 
     def __init__(
-        self, pos: pg.Vector2, vel: pg.Vector2, color: tuple | str, lifetime: float, size: int
+        self,
+        pos: pg.Vector2,
+        vel: pg.Vector2,
+        color: tuple | str,
+        lifetime: float,
+        size: int,
     ):
         self.pos = pg.Vector2(pos)
         self.vel = pg.Vector2(vel)

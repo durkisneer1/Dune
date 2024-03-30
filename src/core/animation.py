@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 import time
 import typing
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 
 
 class LoopType(Enum):

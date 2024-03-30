@@ -1,11 +1,12 @@
-from pytmx.util_pygame import load_pygame
 import pygame as pg
+from pytmx.util_pygame import load_pygame
 
 from src.core.settings import *
 from src.core.surfaces import load_tmx_layers
+from src.enums import GameStates
 from src.levels.arrow_level import ArrowLevel
-from src.levels.ride_level import RideLevel
 from src.levels.lobby import LobbyLevel
+from src.levels.ride_level import RideLevel
 
 
 class Game:
@@ -27,11 +28,11 @@ class Game:
         load_tmx_layers(self, tile_set, "Tree", self.all_tiles)
 
         self.level_dict = {
-            "ride": RideLevel(self),
-            "lobby": LobbyLevel(self),
-            "arrow": ArrowLevel(self),
+            GameStates.RIDE: RideLevel(self),
+            GameStates.LOBBY: LobbyLevel(self),
+            GameStates.ARROW: ArrowLevel(self),
         }
-        self.current_level = "ride"
+        self.current_level = GameStates.LOBBY
 
     def close(self, event: pg.Event):
         if event.type == pg.QUIT:
@@ -48,7 +49,11 @@ class Game:
             for event in pg.event.get():
                 self.close(event)
 
-            self.level_dict[self.current_level].update()
+            level = self.level_dict[self.current_level]
+            level.update()
+            if level.next_state is not None:
+                self.current_level = level.next_state
+                self.level_dict[self.current_level].fade_transition.fade_in = True
 
             pg.display.flip()
 
