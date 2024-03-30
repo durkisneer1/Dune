@@ -11,9 +11,11 @@ if TYPE_CHECKING:
 class Worm:
     def __init__(self, game: "Game"):
         self.game = game
+        self.colliders = [tile.rect for tile in game.collision_tiles]
 
         self.head = BodySegment()
-        self.head.pos = pg.Vector2(WIN_WIDTH / 2, WIN_HEIGHT / 2)
+        self.head.pos.xy = WORLD_WIDTH / 2, WORLD_HEIGHT / 2
+        self.head_rect = pg.Rect(self.head.pos, (10, 10))
         self.segments = []
         for i in range(10):
             segment = BodySegment(
@@ -33,7 +35,12 @@ class Worm:
             self.direction.rotate_ip(self.game.dt * 115)
         self.direction.normalize_ip()
 
-        self.head.pos += self.direction * self.speed * self.game.dt
+        velocity = self.direction * self.speed * self.game.dt
+        self.head.pos.x += velocity.x
+        self.h_collide()
+        self.head.pos.y += velocity.y
+        self.v_collide()
+
         for segment in self.segments:
             segment.update()
 
@@ -41,6 +48,26 @@ class Worm:
             self.head.pos - pg.Vector2(WIN_WIDTH / 2, WIN_HEIGHT / 2),
             self.game.dt * 10
         )
+
+    def h_collide(self):
+        self.head_rect.centerx = self.head.pos.x
+        for collider in self.colliders:
+            if self.head_rect.colliderect(collider):
+                if self.direction.x > 0:
+                    self.head_rect.right = collider.left
+                elif self.direction.x < 0:
+                    self.head_rect.left = collider.right
+                self.head.pos.x = self.head_rect.centerx
+
+    def v_collide(self):
+        self.head_rect.centery = self.head.pos.y
+        for collider in self.colliders:
+            if self.head_rect.colliderect(collider):
+                if self.direction.y > 0:
+                    self.head_rect.bottom = collider.top
+                elif self.direction.y < 0:
+                    self.head_rect.top = collider.bottom
+                self.head.pos.y = self.head_rect.centery
 
     def draw(self):
         for segment in self.segments:

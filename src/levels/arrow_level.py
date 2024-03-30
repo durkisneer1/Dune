@@ -12,7 +12,7 @@ class ArrowLevel:
         self.hud = ArrowHUD(game)
 
     def update(self):
-        self.game.screen.fill("white")
+        self.game.screen.fill((213, 242, 238))
         for tile in self.game.all_tiles:
             tile.draw()
         self.hud.update()

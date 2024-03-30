@@ -31,7 +31,7 @@ class Game:
             "lobby": LobbyLevel(self),
             "arrow": ArrowLevel(self),
         }
-        self.current_level = "arrow"
+        self.current_level = "ride"
 
     def close(self, event: pg.Event):
         if event.type == pg.QUIT:
