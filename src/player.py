@@ -10,14 +10,14 @@ if TYPE_CHECKING:
 
 
 class Player:
-    def __init__(self, game: "Game", colliders: list[pg.Rect]):
+    def __init__(self, game: "Game"):
         self.game = game
-        self.colliders = colliders
+        self.colliders = [tile.rect for tile in game.collision_tiles]
 
         self.image = import_image("assets/paul1.png")
         self.flipped = import_image("assets/paul2.png")
 
-        self.pos = pg.Vector2(WIN_WIDTH / 2, WIN_HEIGHT / 2)
+        self.pos = pg.Vector2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)
         self.rect = self.image.get_frect(center=self.pos)
         self.direction = pg.Vector2()
         self.speed = 100
@@ -41,10 +41,8 @@ class Player:
         velocity = self.direction * self.speed * self.game.dt
 
         self.pos.x += velocity.x
-        self.rect.centerx = self.pos.x
         self.h_collide()
         self.pos.y += velocity.y
-        self.rect.centery = self.pos.y
         self.v_collide()
 
         self.game.camera = self.game.camera.lerp(
@@ -52,6 +50,7 @@ class Player:
         )
 
     def h_collide(self):
+        self.rect.centerx = self.pos.x
         for collider in self.colliders:
             if self.rect.colliderect(collider):
                 if self.direction.x > 0:
@@ -61,6 +60,7 @@ class Player:
                 self.pos.x = self.rect.centerx
 
     def v_collide(self):
+        self.rect.centery = self.pos.y
         for collider in self.colliders:
             if self.rect.colliderect(collider):
                 if self.direction.y > 0:
