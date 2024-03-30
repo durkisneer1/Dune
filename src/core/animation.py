@@ -50,7 +50,9 @@ class _AnimNode:
             return self.end - self.start
 
 
-def _check_for_data_type_coherence(d1: int | float | list, d2: int | float | list) -> bool:
+def _check_for_data_type_coherence(
+    d1: int | float | list, d2: int | float | list
+) -> bool:
     d1_type = type(d1)
     d2_type = type(d2)
 

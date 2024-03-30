@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from src.worm import Worm
+from src.core.particles import Particle
 
 if TYPE_CHECKING:
     from main import Game
@@ -18,3 +19,7 @@ class RideLevel:
             tile.draw()
         self.worm.update()
         self.worm.draw()
+
+        for particle in Particle.particles:
+            particle.update(self.game.dt)
+            particle.draw(self.game.screen)

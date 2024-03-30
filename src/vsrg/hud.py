@@ -137,7 +137,9 @@ class ArrowHUD:
         self.acc_status.update()
 
     def draw(self):
-        for idx, (arrow, arrow_tinted) in enumerate(zip(self.arrows, self.arrows_tinted)):
+        for idx, (arrow, arrow_tinted) in enumerate(
+            zip(self.arrows, self.arrows_tinted)
+        ):
             self.game.screen.blit(arrow, [10 + idx * 20, 10])
 
         for lane_idx, lane in enumerate(self.lanes):
@@ -154,5 +156,7 @@ class ArrowHUD:
                     self.acc_status.fire_anim()
                     self.lanes[lane_idx].pop(ts_idx)
                 else:
-                    self.game.screen.blit(self.arrows_tinted[lane_idx], [10 + lane_idx * 20, y_pos])
+                    self.game.screen.blit(
+                        self.arrows_tinted[lane_idx], [10 + lane_idx * 20, y_pos]
+                    )
         self.acc_status.draw()
