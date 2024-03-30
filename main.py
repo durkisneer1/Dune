@@ -23,9 +23,10 @@ class Game:
         tile_set = load_pygame("assets/terrain.tmx")
         self.collision_tiles = []
         self.all_tiles = []
+        self.sorted_tiles = []
         load_tmx_layers(self, tile_set, "Sand", self.all_tiles)
         load_tmx_layers(self, tile_set, "Wall", (self.collision_tiles, self.all_tiles))
-        load_tmx_layers(self, tile_set, "Tree", self.all_tiles)
+        load_tmx_layers(self, tile_set, "Tree", self.sorted_tiles, 2)
 
         self.level_dict = {
             GameStates.RIDE: RideLevel(self),

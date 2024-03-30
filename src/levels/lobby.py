@@ -18,6 +18,7 @@ class LobbyLevel:
         self.game = game
 
         self.player = Player(game)
+        self.game.sorted_tiles.append(self.player)
         self.game.camera = self.player.pos - (WIN_WIDTH / 2, WIN_HEIGHT / 2)
 
         self.next_state = None
@@ -27,9 +28,9 @@ class LobbyLevel:
         self.player.move()
 
         self.game.screen.fill((213, 242, 238))
-        for tile in self.game.all_tiles:
+        self.game.sorted_tiles.sort(key=lambda t: t.rect.bottom)
+        for tile in self.game.all_tiles + self.game.sorted_tiles:
             tile.draw()
-        self.player.draw()
 
         self.fade_transition.update(self.game.dt)
         self.fade_transition.draw(self.game.screen)

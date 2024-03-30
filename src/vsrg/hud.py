@@ -43,6 +43,7 @@ class AccuracyStatus:
         )
         surf.blit(colored, [0, 1])
         surf.blit(original, [0, 0])
+
         return surf
 
     def make_surface_rect(self):
@@ -51,9 +52,11 @@ class AccuracyStatus:
 
     def update(self):
         self.zoom.update()
+
         if self.current_status is not None:
             self.acc_surface = self.texts[self.current_status]
             self.make_surface_rect()
+
         if self.zoom.is_playing():
             self.acc_surface = pg.transform.scale_by(
                 self.texts[self.current_status], self.zoom.get_value()
@@ -127,6 +130,7 @@ class ArrowHUD:
     def update(self):
         just_pressed = pg.key.get_just_pressed()
         self.current_time = (time.time() - self.begin) * 1000
+
         for lane, fade in zip(self.lane_surfaces, self.lane_fades):
             fade.update()
             lane.set_alpha(fade.get_value())
@@ -136,6 +140,7 @@ class ArrowHUD:
                 self.lane_fades[lane_idx].play(1, LoopType.ONEWAY)
                 non_abs_diff = self.current_time - lane[0] - self.offset
                 diff = abs(non_abs_diff)
+
                 if 0 <= diff < 200:
                     self.acc_status.current_status = bisect_right([70, 120, 200], diff)
                     self.acc_status.fire_anim()
@@ -146,13 +151,14 @@ class ArrowHUD:
     def draw(self):
         self.bg_surface.fill("black")
         self.bg_surface.set_alpha(130)
+
         for idx, lane in enumerate(self.lane_surfaces):
             self.bg_surface.blit(lane, [idx * 20, 0])
-
         pg.draw.line(self.bg_surface, "white", [0, 0], [0, WIN_HEIGHT])
         pg.draw.line(self.bg_surface, "white", [79, 0], [79, WIN_HEIGHT])
 
         self.game.screen.blit(self.bg_surface, [10, 0])
+
         for idx, (arrow, arrow_tinted) in enumerate(
             zip(self.static_arrows, self.falling_arrows)
         ):
@@ -163,9 +169,11 @@ class ArrowHUD:
                 timestamp = timestamp + self.offset
                 if timestamp > self.current_time + 4000:
                     break
+
                 fall_speed = (timestamp - self.current_time) * self.fall_speed
                 if fall_speed > 2000:
                     continue
+
                 y_pos = 10 + fall_speed
                 if y_pos < -20:
                     self.acc_status.current_status = 4
@@ -176,4 +184,5 @@ class ArrowHUD:
                     self.game.screen.blit(
                         self.falling_arrows[lane_idx], [10 + lane_idx * 20, y_pos]
                     )
+
         self.acc_status.draw()

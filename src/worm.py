@@ -80,6 +80,7 @@ class Worm:
         for segment in self.segments:
             rect = segment.image.get_rect(center=segment.pos - self.game.camera)
             self.game.screen.blit(segment.image, rect)
+
         rect = self.head_image.get_rect(center=self.head.pos - self.game.camera)
         self.game.screen.blit(self.head_image, rect)
 
@@ -87,9 +88,17 @@ class Worm:
 class BodySegment:
     def __init__(self, parent: "BodySegment" = None, image: pg.Surface = None):
         self.parent = parent
+
+        temp_surf = pg.Surface(image.get_rect().inflate(12, 12).size, pg.SRCALPHA)
+        image_copy = image.copy()
+        image_copy.set_alpha(200)
+        temp_surf.blit(image_copy, (6, 6))
+        temp_surf = pg.transform.gaussian_blur(temp_surf, 3, False)
+        temp_surf.blit(image, (6, 6))
+        self.src_image = temp_surf
+
         self.pos = pg.Vector2()
         self.space = 14
-        self.src_image = image
         self.image = self.src_image
         self.tick = 0
 
@@ -102,6 +111,7 @@ class BodySegment:
         self.image = pg.transform.rotate(
             self.src_image, direction.angle_to(pg.Vector2(0, 1))
         )
+
         self.pos = self.parent.pos + direction
 
         self.tick += dt
