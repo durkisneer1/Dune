@@ -4,12 +4,6 @@ from typing import TYPE_CHECKING
 import time
 import pickle
 
-"""
-Delete when shipping the game, too much bloat
-"""
-import librosa
-import numpy as np
-from scipy import signal
 from copy import deepcopy
 
 from bisect import bisect_right
@@ -28,47 +22,46 @@ if TYPE_CHECKING:
 """Delete this also when shipping because bloat"""
 
 
+class Cache:
+    def __init__(self) -> None:
+        self.fft = None
+        self.samples = None
+        self.stft = None
+
+
 class MusicAnalyzer:
     def __init__(self, path) -> None:
         self.music_length = pg.mixer.Sound(path).get_length()
         self.path = path
-        self.stft = 0
+        self.cache = self.load_cache()
+
+        self.stft = self.cache.stft
         self.frames_lapsed = 0
-        self.samples = 0
+        self.samples = self.cache.samples
         self.sample_idx = 0
         self.hop = 1 / 1440
-        self.idxs = self.analyze()
+        self.idxs = self.cache.fft
 
-    def analyze(self):
-        y, sr = librosa.load(self.path)
-        hop_samples = int(self.hop * sr)
-        self.stft = np.abs(
-            librosa.stft(y, n_fft=1024, hop_length=hop_samples, center=True)
-        )
-        frequency_bands = 40
-        _, self.samples = self.stft.shape
-        resampling = np.abs(
-            signal.resample(self.stft, frequency_bands, axis=0, domain="time")
-        )
-        return (np.power(resampling, 1) * 420 - 1).astype(np.uint8)
+    def load_cache(self):
+        with open("assets/fft.pkl", "rb") as file:
+            return pickle.load(file)
+
+    def cache_analysis(self):
+        with open("assets/fft.pkl", "wb") as file:
+            cache = Cache()
+            cache.fft = self.idxs
+            cache.stft = self.stft
+            cache.samples = self.samples
+            pickle.dump(cache, file)
 
     def beat_idx(self, sample_idx):
         if sample_idx >= self.samples:
             return 0
-        return np.average(self.idxs[:, sample_idx][::-1])
+        return sum(self.idxs[:, sample_idx][::-1]) / len(self.idxs[:, sample_idx][::-1])
 
     def beat_idx_ms(self, ms):
         ratio = ms / (self.music_length * 1000)
         return self.beat_idx(int(ratio * self.samples))
-
-
-class Arrow:
-    def __init__(self, start, end: None, note_type="note") -> None:
-        self.start = start
-        self.end = end
-        self.type = note_type
-        if note_type == "note":
-            self.end = self.start
 
 
 class AccuracyStatus:
