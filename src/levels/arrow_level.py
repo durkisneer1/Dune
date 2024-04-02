@@ -15,7 +15,6 @@ from src.enums import GameStates
 
 class ArrowLevel:
     def __init__(self, game: "Game"):
-
         self.game = game
         self.player = Player(game)
 

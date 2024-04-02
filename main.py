@@ -12,13 +12,15 @@ from src.levels.ride_level import RideLevel
 class Game:
     def __init__(self):
         pg.init()
+
         self.screen = pg.display.set_mode((WIN_WIDTH, WIN_HEIGHT), pg.SCALED)
-        pg.display.set_caption("Dune")
         self.clock = pg.Clock()
         self.camera = pg.Vector2()
         self.keys = ()
         self.dt = 0
         self.running = True
+
+        pg.display.set_caption("Dune")
 
         tile_set = load_pygame("assets/terrain.tmx")
         self.collision_tiles = []

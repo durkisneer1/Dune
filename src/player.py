@@ -14,8 +14,8 @@ class Player:
         self.game = game
         self.colliders = [tile.rect for tile in game.collision_tiles]
 
-        self.image = import_image("assets/paul1.png")
-        self.flipped = import_image("assets/paul2.png")
+        self.image = import_image("assets/paul/right/idle/0.png")
+        self.flipped = import_image("assets/paul/left/idle/0.png")
 
         self.pos = pg.Vector2(WORLD_WIDTH / 2, WORLD_HEIGHT / 2)
         self.rect = self.image.get_frect(center=self.pos)

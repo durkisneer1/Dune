@@ -18,7 +18,6 @@ from src.core.surfaces import import_image
 if TYPE_CHECKING:
     from main import Game
 
-
 """Delete this also when shipping because bloat"""
 
 
@@ -40,16 +39,17 @@ class MusicAnalyzer:
         self.samples = self.cache.samples
         self.sample_idx = 0
         self.hop = 1 / 1440
-        self.idxs = self.cache.fft
+        self.indices = self.cache.fft
 
-    def load_cache(self):
+    @staticmethod
+    def load_cache():
         with open("assets/fft.pkl", "rb") as file:
             return pickle.load(file)
 
     def cache_analysis(self):
         with open("assets/fft.pkl", "wb") as file:
             cache = Cache()
-            cache.fft = self.idxs
+            cache.fft = self.indices
             cache.stft = self.stft
             cache.samples = self.samples
             pickle.dump(cache, file)
@@ -57,7 +57,9 @@ class MusicAnalyzer:
     def beat_idx(self, sample_idx):
         if sample_idx >= self.samples:
             return 0
-        return sum(self.idxs[:, sample_idx][::-1]) / len(self.idxs[:, sample_idx][::-1])
+        return sum(self.indices[:, sample_idx][::-1]) / len(
+            self.indices[:, sample_idx][::-1]
+        )
 
     def beat_idx_ms(self, ms):
         ratio = ms / (self.music_length * 1000)
@@ -189,7 +191,7 @@ class ArrowHUD:
         self.lane_press.set_at([0, 1], "white")
         self.lane_press = pg.transform.smoothscale(self.lane_press, [20, WIN_HEIGHT])
 
-        self.lane_surfaces = [self.lane_press.copy() for i in range(4)]
+        self.lane_surfaces = [self.lane_press.copy() for _ in range(4)]
 
         self.lane_fades: list[Motion] = []
         for i in range(4):
@@ -222,7 +224,8 @@ class ArrowHUD:
         self.hover_lane = 0
         self.hover_ts = 0
 
-    def init_proc(self): ...
+    def init_proc(self):
+        ...
 
     def update_lane_alpha_values(self):
         for lane, fade in zip(self.lane_surfaces, self.lane_fades):
@@ -232,9 +235,9 @@ class ArrowHUD:
     def update_curr_time(self):
         self.current_time = (time.time() - self.begin) * 1000
 
-    def proc_keypresses(self, downkey, upkey):
+    def proc_key_presses(self, keys):
         for lane_idx, (keymap, lane) in enumerate(zip(self.keymaps, self.lanes)):
-            if downkey[keymap]:
+            if keys[keymap]:
                 self.lane_fades[lane_idx].play(1, LoopType.ONEWAY)
                 if lane:
                     non_abs_diff = self.current_ms - lane[0]
@@ -246,7 +249,8 @@ class ArrowHUD:
                         self.acc_status.fire_anim()
                         lane.pop(0)
 
-    def unpause(self):
+    @staticmethod
+    def unpause():
         """
         silly ahh mixer makes the song start all over again :anger:
         """
@@ -262,7 +266,7 @@ class ArrowHUD:
         pg.mixer.music.fadeout(400)
         self.playing = False
 
-    def is_editor_accesed(self, keys):
+    def is_editor_accessed(self, keys):
         if keys[pg.K_F2]:
             self.editor = not self.editor
             if not self.editor:
@@ -271,10 +275,10 @@ class ArrowHUD:
                     pickle.dump(self.lanes, file)
 
     def proc_song_pos(self):
-        mousepos = pg.mouse.get_pos()
+        mouse_pos = pg.mouse.get_pos()
 
-        if self.time_controls_rect.collidepoint(mousepos):
-            ratio = mousepos[1] / self.time_controls_rect.height
+        if self.time_controls_rect.collidepoint(mouse_pos):
+            ratio = mouse_pos[1] / self.time_controls_rect.height
             self.play(ratio * self.music_length)
 
     def add_note(self):
@@ -296,9 +300,7 @@ class ArrowHUD:
         if hover_lane > 3 or hover_lane < 0:
             return
         for ts in self.editor_lanes[hover_lane]:
-            if ts > hover_ts - (10 * self.fall_speed) and ts < hover_ts + (
-                10 * self.fall_speed
-            ):
+            if abs(hover_ts - ts) < self.fall_speed * 10:
                 self.editor_lanes[hover_lane].remove(ts)
                 break
         self.editor_lanes[hover_lane].sort()
@@ -329,10 +331,7 @@ class ArrowHUD:
     def proc_editor_keys(self, keys):
         if keys[pg.K_p]:
             self.pause_music = not self.pause_music
-            if self.pause_music:
-                self.pause()
-            else:
-                self.play((self.current_ms / 1000))
+            self.pause() if self.pause_music else self.play((self.current_ms / 1000))
         if keys[pg.K_F1]:
             with open("assets/mapdata.pkl", "wb") as file:
                 pickle.dump(self.lanes, file)
@@ -340,7 +339,7 @@ class ArrowHUD:
     def update(self):
         rel = pg.mouse.get_rel()
         keys = pg.key.get_just_pressed()
-        self.is_editor_accesed(keys)
+        self.is_editor_accessed(keys)
         if self.editor:
             if self.playing:
                 self.current_ms = (
@@ -356,16 +355,13 @@ class ArrowHUD:
 
         if keys[pg.K_p]:
             self.pause_music = not self.pause_music
-            if self.pause_music:
-                self.pause()
-            else:
-                self.play((self.current_ms / 1000))
+            self.pause() if self.pause_music else self.play((self.current_ms / 1000))
         if self.playing:
             self.current_ms = (
                 time.time() - self.play_ts
             ) * 1000 + self.begin_playing_ms
         self.update_lane_alpha_values()
-        self.proc_keypresses(keys, None)
+        self.proc_key_presses(keys)
         self.acc_status.update()
 
     def draw_sidelines_deco(self):
@@ -389,17 +385,20 @@ class ArrowHUD:
         ):
             self.game.screen.blit(arrow, [10 + idx * 20, 10])
 
-    def draw_help_lines(self, deg=8, color=[100, 100, 100]):
+    def draw_help_lines(self, deg=8, color=None):
+        if color is None:
+            color = [100, 100, 100]
         idx = 0
-        ms_per_hit = (60000 / 8) * deg / (self.bpm)
+        ms_per_hit = (60000 / 8) * deg / self.bpm
+
         while True:
-            ypos = (ms_per_hit) * idx - self.current_ms % (ms_per_hit)
+            y_pos = ms_per_hit * idx - self.current_ms % ms_per_hit
             pg.draw.rect(
                 self.game.screen,
                 color,
-                [10, 20 + (ypos / self.fall_speed), self.bg_surface.get_width(), 1],
+                [10, 20 + (y_pos / self.fall_speed), self.bg_surface.get_width(), 1],
             )
-            if ypos + 10 > 1000:
+            if y_pos + 10 > 1000:
                 break
             idx += 1
 
@@ -443,8 +442,7 @@ class ArrowHUD:
         mouse = pg.mouse.get_pos()
         y = mouse[1]
         hover_ts = self.current_ms + (y - 20) * self.fall_speed
-        hover_lane = (mouse[0] - 10) // 20
-        current_ts = self.font.render(f"{hover_ts :.0f}ms", False, "white", "black")
+        current_ts = self.font.render(f"{hover_ts:.0f}ms", False, "white", "black")
         ts_rect = current_ts.get_rect(left=0, bottom=y)
         if pg.Rect(10, 0, *self.bg_surface.get_size()).collidepoint(mouse):
             self.game.screen.blit(current_ts, ts_rect)
@@ -458,17 +456,17 @@ class ArrowHUD:
             rect.top = idx
             rect.centerx = self.time_controls_rect.centerx
             pg.draw.rect(self.game.screen, "red", rect, 0)
-        actualpos = self.time_controls_rect.copy()
-        actualpos.height = 1
-        actualpos.top = WIN_HEIGHT * (self.current_ms / (self.music_length * 1000))
-        pg.draw.rect(self.game.screen, "blue", actualpos, 0)
+        actual_pos = self.time_controls_rect.copy()
+        actual_pos.height = 1
+        actual_pos.top = WIN_HEIGHT * (self.current_ms / (self.music_length * 1000))
+        pg.draw.rect(self.game.screen, "blue", actual_pos, 0)
 
-        idkwhattonamethis = actualpos.copy()
-        idkwhattonamethis.left = 0
-        idkwhattonamethis.top = pg.mouse.get_pos()[1]
-        idkwhattonamethis.width = WIN_WIDTH
+        idk_what_to_name_this = actual_pos.copy()
+        idk_what_to_name_this.left = 0
+        idk_what_to_name_this.top = pg.mouse.get_pos()[1]
+        idk_what_to_name_this.width = WIN_WIDTH
 
-        pg.draw.rect(self.game.screen, "orange", idkwhattonamethis, 0)
+        pg.draw.rect(self.game.screen, "orange", idk_what_to_name_this, 0)
 
     def draw_wave_data(self):
         pg.draw.rect(self.game.screen, "black", self.wave_data_rect, 0)
