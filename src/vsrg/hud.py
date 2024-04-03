@@ -224,8 +224,7 @@ class ArrowHUD:
         self.hover_lane = 0
         self.hover_ts = 0
 
-    def init_proc(self):
-        ...
+    def init_proc(self): ...
 
     def update_lane_alpha_values(self):
         for lane, fade in zip(self.lane_surfaces, self.lane_fades):
@@ -279,7 +278,10 @@ class ArrowHUD:
 
         if self.time_controls_rect.collidepoint(mouse_pos):
             ratio = mouse_pos[1] / self.time_controls_rect.height
-            self.play(ratio * self.music_length)
+            if self.playing:
+                self.play(ratio * self.music_length)
+            else:
+                self.current_ms = ratio * self.music_length * 1000
 
     def add_note(self):
         mouse = pg.mouse.get_pos()
