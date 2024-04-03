@@ -70,7 +70,6 @@ class AccuracyStatus:
     def __init__(self, game: "Game"):
         self.game = game
 
-        self.font = pg.font.SysFont("Ubuntu", 16, True)
         self.zoom = Motion()
         self.zoom.add_frame(0.9, 1.3, 50, easing_type=ease_in_back)
         self.zoom.add_frame(1.3, 1.0, 250, easing_type=ease_out_back)
@@ -88,8 +87,8 @@ class AccuracyStatus:
         self.rect = None
 
     def make_text_surface(self, text, color):
-        original = self.font.render(text, False, "white")
-        colored = self.font.render(text, False, color)
+        original = self.game.ubuntu_font.render(text, False, "white")
+        colored = self.game.ubuntu_font.render(text, False, color)
 
         surf = pg.Surface(
             [original.get_width(), original.get_height() + 2], pg.SRCALPHA
@@ -128,8 +127,6 @@ class AccuracyStatus:
 class ArrowHUD:
     def __init__(self, game: "Game"):
         self.game = game
-
-        self.font = pg.font.SysFont("Arial", 12)
 
         self.music_analyzer = MusicAnalyzer("assets/dune.ogg")
 
@@ -224,7 +221,8 @@ class ArrowHUD:
         self.hover_lane = 0
         self.hover_ts = 0
 
-    def init_proc(self): ...
+    def init_proc(self):
+        ...
 
     def update_lane_alpha_values(self):
         for lane, fade in zip(self.lane_surfaces, self.lane_fades):
@@ -444,7 +442,9 @@ class ArrowHUD:
         mouse = pg.mouse.get_pos()
         y = mouse[1]
         hover_ts = self.current_ms + (y - 20) * self.fall_speed
-        current_ts = self.font.render(f"{hover_ts:.0f}ms", False, "white", "black")
+        current_ts = self.game.ariel_font.render(
+            f"{hover_ts:.0f}ms", False, "white", "black"
+        )
         ts_rect = current_ts.get_rect(left=0, bottom=y)
         if pg.Rect(10, 0, *self.bg_surface.get_size()).collidepoint(mouse):
             self.game.screen.blit(current_ts, ts_rect)

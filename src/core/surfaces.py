@@ -27,6 +27,9 @@ def import_folder(
     surf_list = []
     for _, __, img_file in os.walk(path):
         for image in img_file:
+            if not image.endswith(".png"):
+                continue
+
             full_path = path + "/" + image
             surface = import_image(full_path, is_alpha, scale, highlight, blur)
             surf_list.append(surface)
@@ -62,6 +65,14 @@ def import_image(
         image_surf = pg.transform.gaussian_blur(template_surf, 5)
 
     return image_surf
+
+
+def import_anim(path: str, width: int, height: int) -> list[pg.Surface]:
+    anim_surf = import_image(path)
+    anim_list = []
+    for x in range(0, anim_surf.get_width(), width):
+        anim_list.append(anim_surf.subsurface((x, 0, width, height)))
+    return anim_list
 
 
 def load_tmx_layers(

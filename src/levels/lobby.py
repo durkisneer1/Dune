@@ -99,7 +99,6 @@ class DayNightCycle:
         return surface
 
     def update(self):
-
         self.time = 1000 * (time.time() - self.begin) % (self.cycle_length * 1000)
         self.clock_sprite = pygame.transform.rotate(
             self.clockcopy, 360 * self.time / (self.cycle_length * 1000)

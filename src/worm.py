@@ -31,6 +31,16 @@ class Worm:
         self.segments.reverse()
 
         self.direction = pg.Vector2(1, 0)
+        self.directions = (
+            (1, 0),
+            (0, 1),
+            (-1, 0),
+            (0, -1),
+            (1, 1),
+            (-1, 1),
+            (1, -1),
+            (-1, -1),
+        )
         self.speed = 100
 
     def update(self):
@@ -58,23 +68,33 @@ class Worm:
 
     def h_collide(self):
         self.head_rect.centerx = self.head.pos.x
-        for collider in self.colliders:
-            if self.head_rect.colliderect(collider):
+        grid_x, grid_y = self.head.pos.elementwise() // TILE_SIZE
+        for dx, dy in self.directions:
+            if (t := (grid_x + dx, grid_y + dy)) in self.game.collider_dict:
+                if not self.game.collider_dict[t].rect.colliderect(self.head_rect):
+                    continue
+
                 if self.direction.x > 0:
-                    self.head_rect.right = collider.left
+                    self.head_rect.right = self.game.collider_dict[t].rect.left
                 elif self.direction.x < 0:
-                    self.head_rect.left = collider.right
+                    self.head_rect.left = self.game.collider_dict[t].rect.right
                 self.head.pos.x = self.head_rect.centerx
+                break
 
     def v_collide(self):
         self.head_rect.centery = self.head.pos.y
-        for collider in self.colliders:
-            if self.head_rect.colliderect(collider):
+        grid_x, grid_y = self.head.pos.elementwise() // TILE_SIZE
+        for dx, dy in self.directions:
+            if (t := (grid_x + dx, grid_y + dy)) in self.game.collider_dict:
+                if not self.game.collider_dict[t].rect.colliderect(self.head_rect):
+                    continue
+
                 if self.direction.y > 0:
-                    self.head_rect.bottom = collider.top
+                    self.head_rect.bottom = self.game.collider_dict[t].rect.top
                 elif self.direction.y < 0:
-                    self.head_rect.top = collider.bottom
+                    self.head_rect.top = self.game.collider_dict[t].rect.bottom
                 self.head.pos.y = self.head_rect.centery
+                break
 
     def draw(self):
         for segment in self.segments:

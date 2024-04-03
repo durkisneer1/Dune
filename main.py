@@ -22,17 +22,28 @@ class Game:
         self.dt = 0
         self.running = True
 
+        self.ubuntu_font = pg.font.SysFont("Ubuntu", 16, True)
+        self.ariel_font = pg.font.SysFont("Ariel", 12)
+        self.upheaval_font = pg.font.Font("assets/upheaval.ttf", 20)
+
         pg.display.set_caption("Dune")
 
         tile_set = load_pygame("assets/terrain.tmx")
         self.collision_tiles = []
         self.all_tiles = []
         self.sorted_tiles = []
+        self.spawn_tiles = []
+        load_tmx_layers(self, tile_set, "Harvester", self.spawn_tiles)
         load_tmx_layers(self, tile_set, "Sand", self.all_tiles)
         load_tmx_layers(self, tile_set, "Wall", (self.collision_tiles, self.all_tiles))
         load_tmx_layers(self, tile_set, "Tree", self.sorted_tiles, 2)
 
         self.e = E()
+        self.collider_dict = {}
+        for tile in self.collision_tiles:
+            self.collider_dict[
+                (tile.rect.x // TILE_WIDTH, tile.rect.y // TILE_HEIGHT)
+            ] = tile
 
         self.level_dict = {
             GameStates.MENU: Menu(self, self.e),

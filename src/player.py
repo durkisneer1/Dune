@@ -23,6 +23,17 @@ class Player:
         self.speed = 100
         self.right = False
 
+        self.directions = (
+            (1, 0),
+            (0, 1),
+            (-1, 0),
+            (0, -1),
+            (1, 1),
+            (-1, 1),
+            (1, -1),
+            (-1, -1),
+        )
+
     def move(self):
         self.direction.xy = 0, 0
         if self.game.keys[pg.K_a]:
@@ -51,23 +62,33 @@ class Player:
 
     def h_collide(self):
         self.rect.centerx = self.pos.x
-        for collider in self.colliders:
-            if self.rect.colliderect(collider):
+        grid_x, grid_y = self.pos.elementwise() // TILE_SIZE
+        for dx, dy in self.directions:
+            if (t := (grid_x + dx, grid_y + dy)) in self.game.collider_dict:
+                if not self.game.collider_dict[t].rect.colliderect(self.rect):
+                    continue
+
                 if self.direction.x > 0:
-                    self.rect.right = collider.left
+                    self.rect.right = self.game.collider_dict[t].rect.left
                 elif self.direction.x < 0:
-                    self.rect.left = collider.right
+                    self.rect.left = self.game.collider_dict[t].rect.right
                 self.pos.x = self.rect.centerx
+                break
 
     def v_collide(self):
         self.rect.centery = self.pos.y
-        for collider in self.colliders:
-            if self.rect.colliderect(collider):
+        grid_x, grid_y = self.pos.elementwise() // TILE_SIZE
+        for dx, dy in self.directions:
+            if (t := (grid_x + dx, grid_y + dy)) in self.game.collider_dict:
+                if not self.game.collider_dict[t].rect.colliderect(self.rect):
+                    continue
+
                 if self.direction.y > 0:
-                    self.rect.bottom = collider.top
+                    self.rect.bottom = self.game.collider_dict[t].rect.top
                 elif self.direction.y < 0:
-                    self.rect.top = collider.bottom
+                    self.rect.top = self.game.collider_dict[t].rect.bottom
                 self.pos.y = self.rect.centery
+                break
 
     def draw(self):
         img = self.image if self.right else self.flipped
