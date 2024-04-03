@@ -1,12 +1,14 @@
 import pygame as pg
 from pytmx.util_pygame import load_pygame
 
+from core.e import E
 from src.core.settings import *
 from src.core.surfaces import load_tmx_layers
 from src.enums import GameStates
 from src.levels.arrow_level import ArrowLevel
 from src.levels.lobby import LobbyLevel
 from src.levels.ride_level import RideLevel
+from src.levels.menu import Menu
 
 
 class Game:
@@ -30,12 +32,15 @@ class Game:
         load_tmx_layers(self, tile_set, "Wall", (self.collision_tiles, self.all_tiles))
         load_tmx_layers(self, tile_set, "Tree", self.sorted_tiles, 2)
 
+        self.e = E()
+
         self.level_dict = {
+            GameStates.MENU: Menu(self, self.e),
             GameStates.RIDE: RideLevel(self),
             GameStates.LOBBY: LobbyLevel(self),
             GameStates.ARROW: ArrowLevel(self),
         }
-        self.current_level = GameStates.LOBBY
+        self.current_level = GameStates.MENU
 
     def close(self, event: pg.Event):
         if event.type == pg.QUIT:
@@ -50,8 +55,10 @@ class Game:
             self.keys = pg.key.get_pressed()
 
             for event in pg.event.get():
+                self.e.ee(event.type, event)
                 self.close(event)
-
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    print(event.pos)
             level = self.level_dict[self.current_level]
             level.update()
             if level.next_state is not None:
