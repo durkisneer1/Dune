@@ -167,7 +167,7 @@ class ArrowHUD:
             [],
         ]
         if os.path.exists("assets/mapdata.pkl"):
-            print("map data found")
+            print("NOTE: Map data found")
             with open("assets/mapdata.pkl", "rb") as file:
                 self.lanes = pickle.load(file)
 

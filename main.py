@@ -1,7 +1,6 @@
 import pygame as pg
 from pytmx.util_pygame import load_pygame
 
-from core.e import E
 from src.core.settings import *
 from src.core.surfaces import load_tmx_layers
 from src.enums import GameStates
@@ -38,7 +37,6 @@ class Game:
         load_tmx_layers(self, tile_set, "Wall", (self.collision_tiles, self.all_tiles))
         load_tmx_layers(self, tile_set, "Tree", self.sorted_tiles, 2)
 
-        self.e = E()
         self.collider_dict = {}
         for tile in self.collision_tiles:
             self.collider_dict[
@@ -46,7 +44,7 @@ class Game:
             ] = tile
 
         self.level_dict = {
-            GameStates.MENU: Menu(self, self.e),
+            GameStates.MENU: Menu(self),
             GameStates.RIDE: RideLevel(self),
             GameStates.LOBBY: LobbyLevel(self),
             GameStates.ARROW: ArrowLevel(self),
@@ -64,13 +62,13 @@ class Game:
         while self.running:
             self.dt = pg.math.clamp(self.clock.tick() / 1000, 0.001, 0.05)
             self.keys = pg.key.get_pressed()
+            level = self.level_dict[self.current_level]
 
             for event in pg.event.get():
-                self.e.ee(event.type, event)
                 self.close(event)
-                if event.type == pg.MOUSEBUTTONDOWN:
-                    print(event.pos)
-            level = self.level_dict[self.current_level]
+                if self.current_level == GameStates.MENU:
+                    level.handle_events(event)
+
             level.update()
             if level.next_state is not None:
                 self.current_level = level.next_state

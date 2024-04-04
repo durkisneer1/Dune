@@ -12,32 +12,33 @@ from src.enums import GameStates
 
 
 class Menu:
-    def __init__(self, game: "Game", e):
-        self.e = e
-        self.e.s(pygame.MOUSEBUTTONDOWN, lambda data: self.on_click(data))
+    def __init__(self, game: "Game"):
         self.game = game
         self.title = pygame.font.SysFont("Arial", 70)
-        self.optionsfont = pygame.font.SysFont("Arial", 12)
+        self.options_font = pygame.font.SysFont("Arial", 12)
 
         self.dune = self.title.render("Dune", False, "white")
-        self.play = self.optionsfont.render("play", False, "white")
-        self.options = self.optionsfont.render("options", False, "white")
-        self.quit = self.optionsfont.render("quit", False, "white")
+        self.play = self.options_font.render("play", False, "white")
+        self.options = self.options_font.render("options", False, "white")
+        self.quit = self.options_font.render("quit", False, "white")
 
         self.next_state = None
         self.fade_transition = FadeTransition(True, TRANSITION_SPEED, WIN_SIZE)
 
-    def on_click(self, data):
-        if pygame.Rect([10, 120, *self.play.get_size()]).collidepoint(data.pos):
+    def handle_events(self, event):
+        if event.type != pygame.MOUSEBUTTONDOWN:
+            return
+
+        if pygame.Rect([10, 120, *self.play.get_size()]).collidepoint(event.pos):
             self.fade_transition.fade_in = False
             if self.fade_transition.event:
                 self.next_state = GameStates.LOBBY
 
-        if pygame.Rect([10, 145, *self.options.get_size()]).collidepoint(data.pos):
-            print("options not implemented (silly)")
+        elif pygame.Rect([10, 145, *self.options.get_size()]).collidepoint(event.pos):
+            print("'Options' screen not implemented yet")
 
-        if pygame.Rect([10, 170, *self.quit.get_size()]).collidepoint(data.pos):
-            exit()
+        elif pygame.Rect([10, 170, *self.quit.get_size()]).collidepoint(event.pos):
+            exit(0)
 
     def update(self):
         self.game.screen.fill("#ff7f27")
