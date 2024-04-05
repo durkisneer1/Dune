@@ -22,7 +22,7 @@ class Game:
         self.running = True
 
         self.ubuntu_font = pg.font.SysFont("Ubuntu", 16, True)
-        self.ariel_font = pg.font.SysFont("Ariel", 12)
+        self.ariel_font = pg.font.SysFont("Arial", 12)
         self.upheaval_font = pg.font.Font("assets/upheaval.ttf", 20)
 
         pg.display.set_caption("Dune")
@@ -35,7 +35,7 @@ class Game:
         load_tmx_layers(self, tile_set, "Harvester", self.spawn_tiles)
         load_tmx_layers(self, tile_set, "Sand", self.all_tiles)
         load_tmx_layers(self, tile_set, "Wall", (self.collision_tiles, self.all_tiles))
-        load_tmx_layers(self, tile_set, "Tree", self.sorted_tiles, 2)
+        load_tmx_layers(self, tile_set, "Tree", self.sorted_tiles)
 
         self.collider_dict = {}
         for tile in self.collision_tiles:

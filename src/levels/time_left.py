@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 class TimeLeft:
     def __init__(self, game: "Game"):
         self.game = game
-        self.time_left = 60  # In seconds
+        self.time_left = 90  # In seconds
         self.over = False
 
     def update(self):

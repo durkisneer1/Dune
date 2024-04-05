@@ -80,7 +80,6 @@ def load_tmx_layers(
     data: "TiledMap",
     layer_name: str,
     targets: tuple[list, ...] | list,
-    tile_offset: int = 0,
 ) -> None:
     if isinstance(targets, tuple) and not targets:
         return
@@ -96,9 +95,11 @@ def load_tmx_layers(
         if hasattr(layer, "data"):
             if layer.name == layer_name:
                 for x, y, surface in layer.tiles():
-                    pos = pg.Vector2(
-                        x * TILE_WIDTH, y * TILE_HEIGHT - tile_offset * TILE_HEIGHT
-                    )
+                    if surface is None:
+                        print(f"ERROR: Surface not found at {x}, {y}")
+                        continue
+
+                    pos = pg.Vector2(x * TILE_WIDTH, y * TILE_HEIGHT)
                     tile = Tile(game, pos, surface, layer.name)
                     if isinstance(targets, list):
                         targets.append(tile)

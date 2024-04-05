@@ -12,7 +12,7 @@ class Tile:
 
         self.name = name
         self.image = image
-        self.rect = self.image.get_frect(topleft=pos)
+        self.rect = image.get_frect(bottomleft=pos)
 
     def draw(self):
         self.game.screen.blit(self.image, self.rect.move(-self.game.camera))

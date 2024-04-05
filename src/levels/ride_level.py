@@ -49,6 +49,20 @@ class RideLevel:
         self.next_state = None
         self.fade_transition = FadeTransition(True, TRANSITION_SPEED, WIN_SIZE)
 
+    def reset(self):
+        self.time_left = TimeLeft(self.game)
+        self.worm = Worm(self.game)
+        self.explosion_list = []
+        self.harvester_list = [
+            Harvester(
+                self.game,
+                import_folder("assets/harvester"),
+                choice(self.game.spawn_tiles).rect.center,
+                pygame.Vector2(1, 0).rotate(choice(range(360))),
+            )
+            for _ in range(15)
+        ]
+
     def update(self):
         self.game.screen.fill((213, 242, 238))
         for tile in self.game.all_tiles:
@@ -98,10 +112,10 @@ class RideLevel:
         self.fade_transition.update(self.game.dt)
         self.fade_transition.draw(self.game.screen)
 
-        just_pressed = pygame.key.get_just_pressed()
         self.next_state = None
-        if just_pressed[pygame.K_SPACE]:
+        if self.time_left.over and self.fade_transition.fade_in:
             self.fade_transition.fade_in = False
+            self.reset()
         if self.fade_transition.event:
             # level to switch to (arrow as a placeholder)
-            self.next_state = GameStates.ARROW
+            self.next_state = GameStates.LOBBY

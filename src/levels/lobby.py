@@ -38,12 +38,12 @@ class DayNightCycle:
         self.day_transition_complete = 90
 
         self.clock_sprite = self.make_clock()
-        self.clockcopy = self.clock_sprite.copy()
+        self.clock_copy = self.clock_sprite.copy()
         self.clock_rect = self.clock_sprite.get_rect(center=[20, 20])
 
     def make_clock(self):
-        clocksize = [40, 40]
-        surface = pygame.Surface(clocksize, pygame.SRCALPHA)
+        clock_size = [40, 40]
+        surface = pygame.Surface(clock_size, pygame.SRCALPHA)
 
         day_begins_fade = 6.28 * self.night_begin / self.cycle_length
 
@@ -67,13 +67,13 @@ class DayNightCycle:
         pygame.draw.circle(
             surface,
             [30, 80, 230],
-            pygame.Rect(0, 0, *clocksize).center,
-            5 + clocksize[0] // 3,
+            pygame.Rect(0, 0, *clock_size).center,
+            5 + clock_size[0] // 3,
         )
         pygame.draw.arc(
             surface,
             "yellow",
-            [0, 0, *clocksize],
+            [0, 0, *clock_size],
             0,
             day_begins_fade,
             5,
@@ -81,18 +81,18 @@ class DayNightCycle:
         pygame.draw.arc(
             surface,
             "orange",
-            [0, 0, *clocksize],
+            [0, 0, *clock_size],
             day_begins_fade,
             night_start,
             5,
         )
         pygame.draw.arc(
-            surface, "black", [0, 0, *clocksize], night_start, night_begins_fade, 5
+            surface, "black", [0, 0, *clock_size], night_start, night_begins_fade, 5
         )
         pygame.draw.arc(
-            surface, "orange", [0, 0, *clocksize], night_begins_fade, day_start, 5
+            surface, "orange", [0, 0, *clock_size], night_begins_fade, day_start, 5
         )
-        pygame.draw.arc(surface, "yellow", [0, 0, *clocksize], day_start, 6.28, 5)
+        pygame.draw.arc(surface, "yellow", [0, 0, *clock_size], day_start, 6.28, 5)
         surface = pygame.transform.rotate(surface, 90)
         surface = pygame.transform.flip(surface, True, False)
 
@@ -101,22 +101,16 @@ class DayNightCycle:
     def update(self):
         self.time = 1000 * (time.time() - self.begin) % (self.cycle_length * 1000)
         self.clock_sprite = pygame.transform.rotate(
-            self.clockcopy, 360 * self.time / (self.cycle_length * 1000)
+            self.clock_copy, 360 * self.time / (self.cycle_length * 1000)
         )
         self.clock_rect = self.clock_sprite.get_rect(center=[25, 25])
-        if (
-            self.time > self.night_begin * 1000
-            and self.time < self.night_transition_complete * 1000
-        ):
+        if self.night_begin * 1000 < self.time < self.night_transition_complete * 1000:
             self.opacity = 150 - 150 * (
                 self.night_transition_complete * 1000 - self.time
             ) / ((self.night_transition_complete - self.night_begin) * 1000)
             self.surface.set_alpha(self.opacity)
 
-        if (
-            self.time > self.day_begin * 1000
-            and self.time < self.day_transition_complete * 1000
-        ):
+        if self.day_begin * 1000 < self.time < self.day_transition_complete * 1000:
             self.opacity = (
                 150
                 * (self.day_transition_complete * 1000 - self.time)
@@ -148,6 +142,8 @@ class LobbyLevel:
         self.next_state = None
         self.fade_transition = FadeTransition(True, TRANSITION_SPEED, WIN_SIZE)
 
+        self.game_to_go_to = 0
+
     def update(self):
         self.cycle.update()
         self.player.move()
@@ -164,8 +160,13 @@ class LobbyLevel:
 
         just_pressed = pygame.key.get_just_pressed()
         self.next_state = None
-        if just_pressed[pygame.K_SPACE]:
+        if just_pressed[pygame.K_1]:
             self.fade_transition.fade_in = False
+            self.game_to_go_to = GameStates.RIDE
+        elif just_pressed[pygame.K_2]:
+            self.fade_transition.fade_in = False
+            self.game_to_go_to = GameStates.ARROW
+
         if self.fade_transition.event:
             # level to switch to (ride as a placeholder)
-            self.next_state = GameStates.RIDE
+            self.next_state = self.game_to_go_to
