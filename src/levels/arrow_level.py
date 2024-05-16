@@ -45,6 +45,9 @@ class ArrowLevel:
         self.next_state = None
         if just_pressed[pygame.K_SPACE]:
             self.fade_transition.fade_in = False
+            self.hud.pause()
+            self.hud.pause_music = True
+            self.hud.current_ms = 0
         if self.fade_transition.event:
             # level to switch to (lobby as a placeholder)
             self.next_state = GameStates.LOBBY

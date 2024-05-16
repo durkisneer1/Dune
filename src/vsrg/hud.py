@@ -253,9 +253,9 @@ class ArrowHUD:
         """
         pg.mixer.music.unpause()
 
-    def play(self, ms):
-        pg.mixer.music.play(start=ms)
-        self.begin_playing_ms = ms * 1000
+    def play(self, s=0):
+        pg.mixer.music.play(start=s)
+        self.begin_playing_ms = s * 1000
         self.play_ts = time.time()
         self.playing = True
 
