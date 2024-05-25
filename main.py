@@ -2,7 +2,7 @@ import pygame as pg
 from pytmx.util_pygame import load_pygame
 
 from src.core.settings import *
-from src.core.surfaces import load_tmx_layers
+from src.core.surfaces import load_tmx_layers, import_image
 from src.enums import GameStates
 from src.levels.arrow_level import ArrowLevel
 from src.levels.lobby import LobbyLevel
@@ -26,6 +26,7 @@ class Game:
         self.upheaval_font = pg.font.Font("assets/upheaval.ttf", 20)
 
         pg.display.set_caption("Dune")
+        pg.display.set_icon(import_image("assets/icon.png"))
 
         tile_set = load_pygame("assets/terrain.tmx")
         self.collision_tiles = []
